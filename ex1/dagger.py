@@ -138,6 +138,8 @@ def rollout_episode(env, policy, seed, action_chunk, device):
             chunk_buf = policy(torch.as_tensor(obs, dtype=torch.float32, device=device).unsqueeze(0)).cpu().numpy()
             step_in_chunk = 0
         action = chunk_buf[0][step_in_chunk]
+        # Record the state that produced this action (before stepping the env).
+        ep_states.append(obs.astype(np.float32).copy())
         obs, reward, terminated, truncated, info = env.step(np.array([action]))
         step_in_chunk +=1 # Job 4
         done = terminated or truncated
